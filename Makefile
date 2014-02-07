@@ -351,11 +351,14 @@ CC		= $(srctree)/scripts/gcc-wrapper.py $(REAL_CC)
 
 CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
 		  -Wbitwise -Wno-return-void $(CF)
-CFLAGS_MODULE   = -fno-pic
-AFLAGS_MODULE   =
-LDFLAGS_MODULE  =
-CFLAGS_KERNEL	= -mcpu=cortex-a9 -mtune=cortex-a15 -marm -march=armv7-a -mfpu=neon -funsafe-math-optimizations -ftree-vectorize
-AFLAGS_KERNEL	= -mcpu=cortex-a9 -mtune=cortex-a15 -marm -march=armv7-a -mfpu=neon -funsafe-math-optimizations -ftree-vectorize
+KERNELFLAGS	= -munaligned-access -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -ffast-math -fsingle-precision-constant -mcpu=cortex-a15 -mtune=cortex-a15 -marm -mfpu=neon-vfpv4 -ftree-vectorize -mvectorize-with-neon-quad -funroll-loops
+MODFLAGS	= -DMODULE $(KERNELFLAGS)
+CFLAGS_MODULE   = $(MODFLAGS)
+AFLAGS_MODULE   = $(MODFLAGS)
+LDFLAGS_MODULE  = -T $(srctree)/scripts/module-common.lds
+CFLAGS_KERNEL	= $(KERNELFLAGS)
+AFLAGS_KERNEL	= $(KERNELFLAGS)
+
 CFLAGS_GCOV	= -fprofile-arcs -ftest-coverage
 
 
@@ -371,7 +374,8 @@ KBUILD_CPPFLAGS := -D__KERNEL__
 #
 # LINARO OPT
 #
-CFLAGS_A15 = -mcpu=cortex-a9 -march=armv7-a -mtune=cortex-a15 -mfpu=neon -funsafe-math-optimizations
+CFLAGS_A15 = -mtune=cortex-a15 -mfpu=neon-vfpv4 -funsafe-math-optimizations
+
 CFLAGS_MODULO = -fmodulo-sched -fmodulo-sched-allow-regmoves
 KERNEL_MODS  = $(CFLAGS_A15) $(CFLAGS_MODULO)
 
@@ -382,7 +386,6 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-delete-null-pointer-checks \
 		   -ftree-vectorize \
 	           -mno-unaligned-access \
-	       	   -Wno-sizeof-pointer-memaccess \
 	       	   $(KERNEL_MODS)
  
 KBUILD_AFLAGS_KERNEL :=
