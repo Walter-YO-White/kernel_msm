@@ -393,4 +393,3 @@ obj-$(CONFIG_DEBUG_FS) += msm_cpr-debug.o
 endif
 obj-$(CONFIG_MSM_CPU_PWRCTL) +=  msm_cpu_pwrctl.o
 
->>>>>>> 88fb714... msm: cpufreq: Initialize cpufreq driver early at boot
